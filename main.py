@@ -66,8 +66,8 @@ async def play(ctx, url: str):
 
                 voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
                 voice.source = discord.PCMVolumeTransformer(voice.source)
-                voice.source.volume = 0.07
-
+                voice.source.volume = 0.2
+                
             else:
                 queues.clear()
                 return
@@ -232,7 +232,7 @@ async def next(ctx):
         await ctx.send("Next Song")
     else:
         print("No music playing")
-
-client.run(os.environ['TOKEN'])
+TOKEN = 'NzEzOTY2MzU4MDY4NTkyNzEx.Xsy0_A.b7Oyt320P71URECkT3lk1spB3Vs'
+client.run(TOKEN)
 
 
