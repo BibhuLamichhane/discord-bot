@@ -21,11 +21,11 @@ async def on_ready():
 
 @client.event
 async def on_member_join(member):
-    print(f'Ko tori aayo feri 🤦‍♂️')
+    print(f'{member} joined')
 
 @client.event
 async def on_member_remove(member):
-    print(f'Dhanna gayo')
+    print(f'{member} left')
 
 @client.command(pass_context = True)
 async def join(ctx):
@@ -54,8 +54,6 @@ async def play(ctx, url: str):
             main_location = os.path.dirname(os.path.realpath(__file__))
             song_path = os.path.abspath(os.path.realpath("Queue") + "\\" + first_file)
             if length != 0:
-                print("Song done, playing next queued\n")
-                print(f"Songs still in queue: {still_q}")
                 song_there = os.path.isfile("song.mp3")
                 if song_there:
                     os.remove("song.mp3")
@@ -74,29 +72,21 @@ async def play(ctx, url: str):
 
         else:
             queues.clear()
-            print("No songs were queued before the ending of the last song\n")
-
-
 
     song_there = os.path.isfile("song.mp3")
     try:
         if song_there:
             os.remove("song.mp3")
             queues.clear()
-            print("Removed old song file")
     except PermissionError:
-        print("Trying to delete song file, but it's being played")
-        return
+        pass
 
 
     Queue_infile = os.path.isdir("./Queue")
     try:
         Queue_folder = "./Queue"
         if Queue_infile is True:
-            print("Removed old Queue Folder")
             shutil.rmtree(Queue_folder)
-    except:
-        print("No old Queue folder")
 
     voice = get(client.voice_clients, guild=ctx.guild)
 
@@ -111,7 +101,6 @@ async def play(ctx, url: str):
     }
     try:
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            print("Downloading audio now\n")
             ydl.download([url])
     except:
         c_path = os.path.dirname(os.path.realpath(__file__))
@@ -120,7 +109,6 @@ async def play(ctx, url: str):
     for file in os.listdir("./"):
         if file.endswith(".mp3"):
             name = file
-            print(f"Renamed File: {file}\n")
             os.rename(file, "song.mp3")
 
     voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
@@ -129,38 +117,31 @@ async def play(ctx, url: str):
 
     nname = name.rsplit("-", 2)
     await ctx.send(f"Playing: {nname[0]}")
-    print("playing\n")
 
-
+    
 @client.command(pass_context=True, aliases=['pa', 'pau'])
 async def pause(ctx):
 
     voice = get(client.voice_clients, guild=ctx.guild)
 
     if voice and voice.is_playing():
-        print("Music paused")
         voice.pause()
         await ctx.send("Music paused")
     else:
-        print("Music not playing failed pause")
         await ctx.send("Music not playing failed pause")
 
 
-@client.command(pass_context=True, aliases=['r', 'res'])
+@client.command(pass_context=True)
 async def resume(ctx):
 
     voice = get(client.voice_clients, guild=ctx.guild)
 
     if voice and voice.is_paused():
-        print("Resumed music")
         voice.resume()
         await ctx.send("Resumed music")
-    else:
-        print("Music is not paused")
-        await ctx.send("Music is not paused")
 
 
-@client.command(pass_context=True, aliases=['s', 'sto'])
+@client.command(pass_context=True)
 async def stop(ctx):
     voice = get(client.voice_clients, guild=ctx.guild)
 
@@ -171,17 +152,13 @@ async def stop(ctx):
         shutil.rmtree("./Queue")
 
     if voice and voice.is_playing():
-        print("Music stopped")
         voice.stop()
         await ctx.send("Music stopped")
-    else:
-        print("No music playing failed to stop")
-        await ctx.send("No music playing failed to stop")
 
 
 queues = {}
 
-@client.command(pass_context=True, aliases=['q', 'que'])
+@client.command(pass_context=True)
 async def queue(ctx, url: str):
     Queue_infile = os.path.isdir("./Queue")
     if Queue_infile is False:
@@ -211,26 +188,19 @@ async def queue(ctx, url: str):
     }
     try:
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            print("Downloading audio now\n")
             ydl.download([url])
     except:
         pass
 
-    print("Song added to queue\n")
 
-
-@client.command(pass_context=True, aliases=['n', 'nex'])
+@client.command(pass_context=True)
 async def next(ctx):
     voice = get(client.voice_clients, guild=ctx.guild)
 
     if voice and voice.is_playing():
-        print("Playing Next Song")
         voice.stop()
         await ctx.send("Next Song")
-    else:
-        print("No music playing")
-TOKEN = 'NzEzOTY2MzU4MDY4NTkyNzEx.Xsy0_A.b7Oyt320P71URECkT3lk1spB3Vs'
-client.run(TOKEN)
+client.run(os.environ['TOKEN'])
 
 
 
