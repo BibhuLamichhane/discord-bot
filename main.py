@@ -11,8 +11,6 @@ try:
 except:
     raise FileNotFoundError
 
-# TOKEN = 'NzEzOTY2MzU4MDY4NTkyNzEx.XsnzUg.H5x_o47zK7YCmFKBO5siNIXpPzQ'
-TOKEN = 'NzExNTI0ODY5NzQ5MDgwMjE0.XsyfWw.K0jM1ZQJdcHJIpjniv2_WKXrQh4'
 client = commands.Bot(command_prefix = '.')
 
 players = {}
@@ -235,6 +233,6 @@ async def next(ctx):
     else:
         print("No music playing")
 
-client.run(TOKEN)
+client.run(os.environ['TOKEN'])
 
 
