@@ -233,6 +233,6 @@ async def next(ctx):
     else:
         print("No music playing")
 
-client.run(os.environ['TOKEN'])
+client.run('NzExNTI0ODY5NzQ5MDgwMjE0.XsyfWw.K0jM1ZQJdcHJIpjniv2_WKXrQh4')
 
 
