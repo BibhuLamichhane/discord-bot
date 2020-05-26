@@ -67,7 +67,7 @@ async def play(ctx, url: str):
                 voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
                 voice.source = discord.PCMVolumeTransformer(voice.source)
                 voice.source.volume = 0.2
-                
+
             else:
                 queues.clear()
                 return
@@ -114,7 +114,6 @@ async def play(ctx, url: str):
             print("Downloading audio now\n")
             ydl.download([url])
     except:
-        print("FALLBACK: youtube-dl does not support this URL, using Spotify (This is normal if Spotify URL)")
         c_path = os.path.dirname(os.path.realpath(__file__))
         system("spotdl -f " + '"' + c_path + '"' + " -s " + url)
 
@@ -215,9 +214,7 @@ async def queue(ctx, url: str):
             print("Downloading audio now\n")
             ydl.download([url])
     except:
-        print("FALLBACK: youtube-dl does not support this URL, using Spotify (This is normal if Spotify URL)")
-        q_path = os.path.abspath(os.path.realpath("Queue"))
-        system(f"spotdl -ff song{q_num} -f " + '"' + q_path + '"' + " -s " + url)
+        pass
 
     print("Song added to queue\n")
 
@@ -234,5 +231,6 @@ async def next(ctx):
         print("No music playing")
 TOKEN = 'NzEzOTY2MzU4MDY4NTkyNzEx.Xsy0_A.b7Oyt320P71URECkT3lk1spB3Vs'
 client.run(TOKEN)
+
 
 
