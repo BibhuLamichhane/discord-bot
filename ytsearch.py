@@ -36,3 +36,13 @@ def get_authenticated_service():
             pickle.dump(credentials, f)
     return googleapiclient.discovery.build(
         api_service_name, api_version, credentials=credentials)
+
+if __name__ == '__main__':
+    print('You only have to do this once so please follow the instructions')
+    print('-'*120)
+    video_title = input('Enter a random video title: ')
+    print('-'*120)
+    print('''Now follow the link displayed below and sign in with your google account. Now, agree to \neverything and copy and paste the authorization code you get below''')
+    print('-'*120)
+    main(video_title)
+    
