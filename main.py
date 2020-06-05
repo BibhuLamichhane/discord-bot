@@ -7,6 +7,7 @@ try:
     import shutil
     from os import system
     import os
+    import ytsearch
     print('import complete')
 except:
     raise FileNotFoundError
@@ -17,7 +18,7 @@ players = {}
 
 @client.event
 async def on_ready():
-    print('client is running')
+    print('Bot is running')
 
 @client.event
 async def on_member_join(member):
@@ -35,8 +36,9 @@ async def join(ctx):
 @client.command(pass_context = True)
 async def leave(ctx):
     await ctx.voice_client.disconnect()
+    
 
-@client.command(pass_context=True, aliases=['p', 'pla'])
+@client.command(pass_context=True)
 async def play(ctx, url: str):
 
     def check_queue():
@@ -48,7 +50,6 @@ async def play(ctx, url: str):
             try:
                 first_file = os.listdir(DIR)[0]
             except:
-                print("No more queued song(s)\n")
                 queues.clear()
                 return
             main_location = os.path.dirname(os.path.realpath(__file__))
@@ -64,7 +65,7 @@ async def play(ctx, url: str):
 
                 voice.play(discord.FFmpegPCMAudio("song.mp3"), after=lambda e: check_queue())
                 voice.source = discord.PCMVolumeTransformer(voice.source)
-                voice.source.volume = 0.2
+                voice.source.volume = 0.07
 
             else:
                 queues.clear()
@@ -73,13 +74,16 @@ async def play(ctx, url: str):
         else:
             queues.clear()
 
+
+
     song_there = os.path.isfile("song.mp3")
     try:
         if song_there:
             os.remove("song.mp3")
             queues.clear()
     except PermissionError:
-        pass
+        await ctx.send("ERROR: Music playing")
+        return
 
 
     Queue_infile = os.path.isdir("./Queue")
@@ -87,6 +91,8 @@ async def play(ctx, url: str):
         Queue_folder = "./Queue"
         if Queue_infile is True:
             shutil.rmtree(Queue_folder)
+
+    await ctx.send("Getting everything ready now")
 
     voice = get(client.voice_clients, guild=ctx.guild)
 
@@ -100,11 +106,16 @@ async def play(ctx, url: str):
         }],
     }
     try:
-        with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+        if 'http' in url:
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
+        else:
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([ytsearch.main(url)])
+
     except:
         c_path = os.path.dirname(os.path.realpath(__file__))
-        system("spotdl -f " + '"' + c_path + '"' + " -s " + url)
+        system("spotdl -f " + '"' + c_path + '"' + " -s " + url)  # make sure there are spaces in the -s
 
     for file in os.listdir("./"):
         if file.endswith(".mp3"):
@@ -118,8 +129,8 @@ async def play(ctx, url: str):
     nname = name.rsplit("-", 2)
     await ctx.send(f"Playing: {nname[0]}")
 
-    
-@client.command(pass_context=True, aliases=['pa', 'pau'])
+
+@client.command(pass_context=True)
 async def pause(ctx):
 
     voice = get(client.voice_clients, guild=ctx.guild)
@@ -147,14 +158,9 @@ async def stop(ctx):
 
     queues.clear()
 
-    queue_infile = os.path.isdir("./Queue")
-    if queue_infile is True:
-        shutil.rmtree("./Queue")
-
     if voice and voice.is_playing():
         voice.stop()
         await ctx.send("Music stopped")
-
 
 queues = {}
 
@@ -190,7 +196,10 @@ async def queue(ctx, url: str):
         with youtube_dl.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
     except:
-        pass
+        q_path = os.path.abspath(os.path.realpath("Queue"))
+        system(f"spotdl -ff song{q_num} -f " + '"' + q_path + '"' + " -s " + url)
+
+    await ctx.send(f"Adding song {q_num} to the queue")
 
 
 @client.command(pass_context=True)
@@ -200,7 +209,9 @@ async def next(ctx):
     if voice and voice.is_playing():
         voice.stop()
         await ctx.send("Next Song")
+
 client.run(os.environ['TOKEN'])
+
 
 
 
