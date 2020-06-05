@@ -210,7 +210,7 @@ async def next(ctx):
         voice.stop()
         await ctx.send("Next Song")
 
-client.run(os.environ['TOKEN'])
+client.run('TOKEN')
 
 
 
